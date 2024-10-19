@@ -219,9 +219,14 @@ export const getRecordByURI = async (req, res) => {
     try {
         const { pinataHash } = req.params;
         const record = await accessRecord.find({
-            "accessData.pinataHash": pinataHash,
-            "accessData.accessFlag": true // Only fetch records where accessFlag is true
-        });
+            accessData: {
+                $elemMatch: {
+                    pinataHash: pinataHash,
+                    accessFlag: true
+                }
+            }
+        }
+        );
 
         if (!record || record.length === 0) {
             return res.status(404).send({
